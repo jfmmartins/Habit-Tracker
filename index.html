@@ -82,6 +82,9 @@
             </svg>
         );
 
+        const Download = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>);
+        const Upload = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>);
+
         function HabitTracker() {
             const [habits, setHabits] = useState([]);
             const [newHabitName, setNewHabitName] = useState('');
@@ -169,6 +172,29 @@
                     localStorage.setItem('habits-data-shared', JSON.stringify(updatedHabits));
                 } catch (error) {
                     console.error('Error saving data:', error);
+                }
+            };
+
+            const exportData = () => {
+                const dataStr = JSON.stringify(habits);
+                navigator.clipboard.writeText(dataStr).then(() => {
+                    alert('Dados copiados! Envie este texto para o seu telemóvel e use o botão "Importar".');
+                });
+            };
+
+            const importData = () => {
+                const dataStr = prompt("Cole aqui o código dos dados (Cuidado: isto irá substituir os dados atuais):");
+                if (dataStr) {
+                    try {
+                        const parsed = JSON.parse(dataStr);
+                        if (Array.isArray(parsed)) {
+                            setHabits(parsed);
+                            saveData(parsed);
+                            alert('Hábitos importados com sucesso!');
+                        }
+                    } catch (e) {
+                        alert('Erro ao importar. O código é inválido.');
+                    }
                 }
             };
 
@@ -289,6 +315,12 @@
                     <div className="max-w-6xl mx-auto">
                         <div className="flex justify-between items-center mb-8">
                             <h1 className="text-4xl font-bold text-gray-800">Habit Tracker</h1>
+                            <button onClick={exportData} className="flex items-center gap-2 px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm">
+                                    <Download size={16} /> Exportar
+                            </button>
+                            <button onClick={importData} className="flex items-center gap-2 px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm">
+                                    <Upload size={16} /> Importar
+                            </button>
                             <button
                                 onClick={requestNotificationPermission}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
